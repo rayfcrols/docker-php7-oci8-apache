@@ -4,7 +4,7 @@ MAINTAINER Amin Mkh <mukh_amin@yahoo.com>
 
 # installing required stuff
 RUN apt-get update \
-    && apt-get install -y unzip libaio-dev libmcrypt-dev git \
+    && apt-get install -y unzip libaio-dev libzip-dev libmcrypt-dev git \
     && apt-get clean -y
 
 # PHP extensions
@@ -13,6 +13,9 @@ RUN \
     && docker-php-ext-configure mysqli --with-mysqli=mysqlnd \
     && docker-php-ext-install pdo_mysql \
     && docker-php-ext-install mbstring \
+    && docker-php-ext-install zip \
+    && docker-php-ext-install gd \
+    && docker-php-ext-install pdo pdo_pgsql \
     && docker-php-ext-install mcrypt
 
 # xdebug, if you want to debug
@@ -34,6 +37,11 @@ ADD oracle/instantclient-sqlplus-linux.x64-12.1.0.2.0.zip /tmp/
 RUN unzip /tmp/instantclient-basic-linux.x64-12.1.0.2.0.zip -d /usr/local/ \
     && unzip /tmp/instantclient-sdk-linux.x64-12.1.0.2.0.zip -d /usr/local/ \
     && unzip /tmp/instantclient-sqlplus-linux.x64-12.1.0.2.0.zip -d /usr/local/
+    
+    # Set up the Oracle environment variables
+ENV LD_LIBRARY_PATH /usr/local/oracle/12.1/client64/lib/
+ENV ORACLE_HOME /usr/local/oracle/12.1/client64/lib/
+
 # install pecl
 RUN curl -O http://pear.php.net/go-pear.phar \
     ; /usr/local/bin/php -d detect_unicode=0 go-pear.phar
